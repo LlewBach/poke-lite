@@ -1,18 +1,17 @@
-const Store = {
+const store = {
   caught: 0,
   team: [],
 };
 
-const proxiedStore = new Proxy(Store, {
+const handler = {
   // The 'set' trap - runs whenever you do proxiedStore[property] = value
   set(target, property, value) {
-    const prev = { ...target };
-    const ok = Reflect.set(target, property, value);
-    const next = { ...target };
-
+    target[property] = value;
     window.dispatchEvent(new Event("appstatechange"));
-    return ok;
+    return true;
   },
-});
+};
+
+const proxiedStore = new Proxy(store, handler);
 
 export default proxiedStore;
