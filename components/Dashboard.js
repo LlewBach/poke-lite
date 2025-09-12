@@ -3,12 +3,16 @@ export default class Dashboard extends HTMLElement {
     super();
   }
   connectedCallback() {
-    this._onState = () => this.render();
-    window.addEventListener("appstatechange", this._onState);
+    // this._onState = () => this.render();
+    // window.addEventListener("appstatechange", this._onState); --- Alternative to render arrow binding
+    window.addEventListener("appstatechange", this.render);
     this.render();
   }
-  disconnectedCallback() {}
-  render() {
+  disconnectedCallback() {
+    window.removeEventListener("appstatechange", this.render);
+  }
+  // render is arrow function for this binding
+  render = () => {
     const { caught, team } = app.store;
 
     this.innerHTML = `
@@ -23,7 +27,7 @@ export default class Dashboard extends HTMLElement {
       app.store.caught++;
       console.log(app.store);
     });
-  }
+  };
 }
 
 // Custom element names need a hyphen (spec requirement)
