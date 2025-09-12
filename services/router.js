@@ -8,9 +8,22 @@ const Router = {
         Router.go(url);
       });
     });
+
+    // Event handler for URL changes
+    window.addEventListener("popstate", (e) => {
+      const route = e.state?.route || location.pathname;
+      Router.go(route, false);
+    });
+
+    // Initial render
+    Router.go(location.pathname);
   },
   go(route, addToHistory = true) {
     console.log(`Going to ${route}`);
+
+    if (addToHistory) {
+      history.pushState({ route }, null, route);
+    }
 
     let pageElement = null;
     switch (route) {
