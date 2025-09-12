@@ -29,11 +29,12 @@ const Router = {
     switch (route) {
       case "/":
         pageElement = document.createElement("dashboard-page");
-        pageElement.textContent = "Dashboard";
+        break;
+      case "/pokedex":
+        pageElement = document.createElement("pokedex-page");
         break;
       case "/about":
         pageElement = document.createElement("about-page");
-        pageElement.textContent = "About";
         break;
     }
 
