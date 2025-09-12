@@ -3,9 +3,27 @@ export default class Dashboard extends HTMLElement {
     super();
   }
   connectedCallback() {
-    this.innerHTML = "<h2>Dashboard</h2>";
+    this._onState = () => this.render();
+    window.addEventListener("appstatechange", this._onState);
+    this.render();
   }
-  render() {}
+  disconnectedCallback() {}
+  render() {
+    const { caught, team } = app.store;
+
+    this.innerHTML = `
+      <section class="dashboard">
+        <h2>Dashboard</h2>
+        <p><strong>${caught}</strong> caught, <strong>${team.length}</strong> in team.</p>
+        <button id="btn-catch">Simulate catch</button>
+      </section>
+    `;
+
+    this.querySelector("#btn-catch").addEventListener("click", () => {
+      app.store.caught++;
+      console.log(app.store);
+    });
+  }
 }
 
 // Custom element names need a hyphen (spec requirement)

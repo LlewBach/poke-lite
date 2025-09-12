@@ -1,4 +1,5 @@
-import Router from "./services/Router.js";
+import Router from "./services/router.js";
+import Store from "./services/store.js"; // Actually proxiedStore
 
 // Link web components
 import Dashboard from "./components/Dashboard.js";
@@ -8,6 +9,7 @@ console.log("app.js running");
 
 window.app = {};
 app.router = Router;
+app.store = Store;
 
 window.addEventListener("DOMContentLoaded", () => {
   app.router.init();
