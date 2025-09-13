@@ -9,7 +9,7 @@ export default class Pokedex extends HTMLElement {
   async load() {
     try {
       const res = await fetch(
-        "https://pokeapi.co/api/v2/pokemon?limit=20&offset=0"
+        "https://pokeapi.co/api/v2/pokemon?limit=21&offset=0"
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const list = await res.json();
