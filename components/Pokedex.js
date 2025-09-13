@@ -44,28 +44,27 @@ export default class Pokedex extends HTMLElement {
     this.innerHTML = `
             <section>
             <h2>Pokedex</h2>
-            <ul>
-                ${items.map(
-                  (p) => `
-                    <li>
-                        <img
-                            loading="lazy" 
-                            src=${p.img}
-                            alt=${p.name}
-                            width="96"
-                            height="96"
-                        >
-                        <p>#${p.id} ${p.name}</p>
-                        <small>Types: ${p.types.join(", ")}</small>
-                        <div class="stats">
-                            <span>HP ${p.stats.hp}</span>
-                            <span>ATK ${p.stats.attack}</span>
-                            <span>DEF ${p.stats.defense}</span>
-                        </div>
-                    </li>
+            <div class="pokedex-grid">
+                ${items
+                  .map(
+                    (p) => `
+                    <poke-card
+                        id="${p.id}"
+                        name="${p.name}"
+                        img="${p.img}"
+                        types="${p.types.join(",")}"
+                        hp="${p.stats.hp}"
+                        attack="${p.stats.attack}"
+                        defense="${p.stats.defense}"
+                        spattack="${p.stats["special-attack"]}"
+                        spdefense="${p.stats["special-defense"]}"
+                        speed="${p.stats.speed}"
+                    >
+                    </poke-card>
                 `
-                )}
-            </ul>
+                  )
+                  .join("")}
+            </div>
             </section>
         `;
   }
