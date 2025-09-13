@@ -21,7 +21,7 @@ export default class Pokedex extends HTMLElement {
       console.log(details);
 
       this.items = details.map((d) => ({
-        id: d.id,
+        pid: d.id,
         name: d.name,
         img:
           d.sprites?.other?.["official-artwork"]?.front_default ||
@@ -49,7 +49,7 @@ export default class Pokedex extends HTMLElement {
                   .map(
                     (p) => `
                     <poke-card
-                        id="${p.id}"
+                        pid="${p.pid}"
                         name="${p.name}"
                         img="${p.img}"
                         types="${p.types.join(",")}"

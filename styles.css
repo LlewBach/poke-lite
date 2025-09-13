@@ -1,5 +1,15 @@
+header {
+    text-align: center;
+}
+
 .pokedex-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
+}
+
+.poke-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    border: 1px solid red;
 }

@@ -23,8 +23,14 @@ const Router = {
         pageElement = document.createElement("about-page");
         break;
       default:
-        pageElement = document.createElement("div");
-        pageElement.innerHTML = "<h2>Not found</h2>";
+        const m = route.match(/^\/pokemon\/(\d+)$/);
+        if (m) {
+          pageElement = document.createElement("pokemon-details");
+          pageElement.setAttribute("pid", m[1]);
+        } else {
+          pageElement = document.createElement("div");
+          pageElement.innerHTML = "<h2>Not found</h2>";
+        }
     }
 
     const main = document.querySelector("main");

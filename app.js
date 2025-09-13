@@ -5,6 +5,7 @@ import Store from "./services/store.js"; // Actually proxiedStore
 import Dashboard from "./components/Dashboard.js";
 import Pokedex from "./components/Pokedex.js";
 import PokeCard from "./components/PokeCard.js";
+import PokeDetails from "./components/PokeDetails.js";
 import About from "./components/About.js";
 
 console.log("app.js running");
