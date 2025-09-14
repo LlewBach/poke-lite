@@ -25,7 +25,21 @@ export default class PokeDetails extends HTMLElement {
           r.json()
         );
         console.log("Evo: ", evo);
-        chain = this.flattenChain(evo.chain); // [{name, stage}]
+        chain = this.flattenChain(evo.chain); // [{pid, name, stage}]
+
+        // Add image for each pokemon in chain
+        chain = await Promise.all(
+          chain.map(async (p) => {
+            const pokeDeets = await fetch(
+              `https://pokeapi.co/api/v2/pokemon/${p.pid}`
+            ).then((r) => r.json());
+            console.log("Pokedeets: ", pokeDeets);
+            const evoImg =
+              pokeDeets.sprites.other["official-artwork"].front_default ||
+              pokeDeets.sprites.front_default;
+            return { ...p, img: evoImg };
+          })
+        ); // [{pid, name, stage, img}]
       }
 
       const img =
@@ -40,7 +54,14 @@ export default class PokeDetails extends HTMLElement {
         species.flavor_text_entries.find((f) => f.language.name === "en")
           ?.flavor_text || "";
 
-      this.render({ img, types, stats, flavor, name: poke.name, chain });
+      this.render({
+        img,
+        types,
+        stats,
+        flavor,
+        name: poke.name,
+        chain,
+      });
     } catch (err) {
       this.innerHTML = `<p style="color:red">Failed to load: ${String(
         err
@@ -50,7 +71,14 @@ export default class PokeDetails extends HTMLElement {
   // flatten the evo chain into a simple list with stage numbers
   flattenChain(node, stage = 1, acc = []) {
     if (!node) return acc;
-    acc.push({ name: node.species?.name ?? "unknown", stage });
+    const url = node.species.url;
+    const m = url.match(/\/pokemon-species\/(\d+)\//);
+    const id = m ? Number(m[1]) : null;
+    acc.push({
+      pid: id,
+      name: node.species.name,
+      stage,
+    });
     (node.evolves_to || []).forEach((n) =>
       this.flattenChain(n, stage + 1, acc)
     );
@@ -66,7 +94,7 @@ export default class PokeDetails extends HTMLElement {
 
         <div class="poke-details-grid">
           <div class="img-container">
-            <img src="${img}"</p>
+            <img id="main-detail-img" src="${img}"</p>
           </div>
           <div>
             <h2>Pokemon Info</h2>
@@ -82,11 +110,15 @@ export default class PokeDetails extends HTMLElement {
 
         <div class="species-details-grid">
           <p>types: ${types.join(", ")}</p>
+
           <div class="evo">
             ${chain
               .map(
-                (s, i) => `
-                  <span class="evo-chip">${s.name} ${s.stage}</span>
+                (evoP, i) => `
+                  <a class="evo-species" href="#/pokemon/${evoP.pid}">
+                    <img class="evo-img" src="${evoP.img}">
+                  </a>
+                  <span class="evo-chip">${evoP.name} ${evoP.stage}</span>
                   ${i < chain.length - 1 ? '<span class="arrow">→</span>' : ""}
                 `
               )

@@ -13,3 +13,11 @@ header {
     grid-template-columns: 1fr 2fr;
     border: 1px solid red;
 }
+
+#main-detail-img {
+    width: 300px;
+}
+
+.evo-img {
+    width: 200px;
+}
