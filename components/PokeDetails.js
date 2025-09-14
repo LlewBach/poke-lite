@@ -89,42 +89,55 @@ export default class PokeDetails extends HTMLElement {
       <section class="details">
         <a class="navlink" href="#/pokedex">← Back</a>
         <header>
-          <h2>#${this.pid} ${name}</h2>
+          <h2>${name}</h2>
         </header>
 
-        <div class="poke-details-grid">
-          <div class="img-container">
-            <img id="main-detail-img" src="${img}"</p>
-          </div>
+        <div id="poke-details-grid">
           <div>
-            <h2>Pokemon Info</h2>
+            <p>Pokedex ID: ${this.pid}</p>
             <p>HP: ${stats.hp}</p>
             <p>Attack: ${stats.attack}</p>
             <p>Defense: ${stats.defense}</p>
             <p>Special Attack: ${stats["special-attack"]}</p>
             <p>Special Defense: ${stats["special-defense"]}</p>
             <p>Speed: ${stats.speed}</p>
-            <p class="flavor">Flavour: ${flavor}</p>
+            
+          </div>
+          <div class="img-container">
+            <img id="main-detail-img" src="${img}">
+          </div>
+          <div>
+            <div class="type-container">
+              ${types
+                .map(
+                  (type) =>
+                    `
+                  <img class="type-icon" src="../assets/types/${type}.svg">
+                  <span>${type}</span>
+                  `
+                )
+                .join("")}
+            </div>
+            <p class="flavor">${flavor}</p>
           </div>
         </div>
 
-        <div class="species-details-grid">
-          <p>types: ${types.join(", ")}</p>
-
-          <div class="evo">
-            ${chain
-              .map(
-                (evoP, i) => `
-                  <a class="evo-species" href="#/pokemon/${evoP.pid}">
+        <div id="evo-chain">
+          ${chain
+            .map(
+              (evoP, i) => `
+                <div class="evo-chain-item">
+                  <h3>${evoP.name}</h3>
+                  <a href="#/pokemon/${evoP.pid}">
                     <img class="evo-img" src="${evoP.img}">
                   </a>
-                  <span class="evo-chip">${evoP.name} ${evoP.stage}</span>
-                  ${i < chain.length - 1 ? '<span class="arrow">→</span>' : ""}
-                `
-              )
-              .join("")}
-          </div> 
-        </div>
+                  <p>Stage ${evoP.stage}</p>
+                </div>
+                ${i < chain.length - 1 ? '<span class="arrow">→</span>' : ""}
+              `
+            )
+            .join("")}
+        </div> 
       </section>
     `;
   }

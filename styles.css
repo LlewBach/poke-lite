@@ -1,5 +1,23 @@
+body {
+    background-color: rgb(3, 3, 54);
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 10px;
+}
+
 header {
     text-align: center;
+}
+
+h2, h3 {
+    text-transform: capitalize;
 }
 
 .pokedex-grid {
@@ -8,16 +26,56 @@ header {
     gap: 16px;
 }
 
-.poke-details-grid {
+#poke-details-grid {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 2fr 1fr;
     border: 1px solid red;
+    padding: 10px;
+}
+
+.type-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.type-icon {
+    width: 30px;
+    border: 1px solid black;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.img-container {
+    display: flex;
+    justify-content: center;
 }
 
 #main-detail-img {
     width: 300px;
 }
 
+p.flavor {
+    font-size: 20px;
+}
+
+#evo-chain {
+    display: flex;
+    border: 1px solid blue;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.evo-chain-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid green;
+}
+
 .evo-img {
-    width: 200px;
+    width: 150px;
+}
+
+.arrow {
+    font-size: 50px;
 }
