@@ -9,10 +9,11 @@ const Router = {
   },
   renderFromHash() {
     // hash looks like "#/pokedex" — strip the leading "#"
-    const route = location.hash.slice(1) || "/";
+    const raw = location.hash.slice(1) || "/";
+    const [path, query] = raw.split("?");
 
     let pageElement = null;
-    switch (route) {
+    switch (path) {
       case "/":
         pageElement = document.createElement("dashboard-page");
         break;
@@ -23,7 +24,7 @@ const Router = {
         pageElement = document.createElement("about-page");
         break;
       default:
-        const m = route.match(/^\/pokemon\/(\d+)$/);
+        const m = path.match(/^\/pokemon\/(\d+)$/);
         if (m) {
           pageElement = document.createElement("pokemon-details");
           pageElement.setAttribute("pid", m[1]);

@@ -87,7 +87,6 @@ export default class PokeDetails extends HTMLElement {
   render({ img, types, stats, flavor, name, chain }) {
     this.innerHTML = `
       <section class="details">
-        <a class="navlink" href="#/pokedex">← Back</a>
         <header>
           <h2>${name}</h2>
         </header>
