@@ -17,6 +17,12 @@ const Router = {
       case "/":
         pageElement = document.createElement("dashboard-page");
         break;
+      case "/encounter":
+        pageElement = document.createElement("encounter-page");
+        break;
+      case "/battle":
+        pageElement = document.createElement("battle-page");
+        break;
       case "/pokedex":
         pageElement = document.createElement("pokedex-page");
         break;

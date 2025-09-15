@@ -1,6 +1,6 @@
 export default class PokeDetails extends HTMLElement {
   constructor() {
-    super(); // Maybe not necessary?
+    super();
   }
   connectedCallback() {
     this.pid = this.getAttribute("pid");

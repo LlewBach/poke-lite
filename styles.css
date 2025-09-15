@@ -1,3 +1,4 @@
+/* GLOBAL */
 body {
     background-color: rgb(3, 3, 54);
     color: white;
@@ -20,6 +21,27 @@ h2, h3 {
     text-transform: capitalize;
 }
 
+/* BATTLE */
+#battle-grid {
+    border: 1px solid red;
+}
+
+.battle-row {
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid green;
+    margin-bottom: 50px;
+}
+
+#farImg {
+    width: 100px;
+}
+
+#nearImg {
+    width: 200px;
+}
+
+/* POKEDEX */
 #search-form {
     display: flex;
     justify-content: center;
@@ -44,10 +66,11 @@ h2, h3 {
     gap: 15px;
 }
 
-#prev, #pager-info {
+/* #prev, #pager-info {
     margin-right: 10px;
-}
+} */
 
+/* POKE DETAILS */
 #poke-details-grid {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
