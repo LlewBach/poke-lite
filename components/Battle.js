@@ -3,6 +3,9 @@ export default class Battle extends HTMLElement {
     super();
     this.farPid;
     this.teamIndex = 0;
+    this.isMyTurn = false;
+    this.far;
+    this.near;
   }
   connectedCallback() {
     this.farPid = app.store.currentEncounter?.pid;
@@ -13,6 +16,22 @@ export default class Battle extends HTMLElement {
     }
     this.load();
   }
+  _bindListeners() {
+    const atkBtn = this.querySelector("#atk-btn");
+    atkBtn.addEventListener("click", this._attack);
+  }
+  _attack = () => {
+    console.log("Attacking!");
+    if (this.isMyTurn) {
+      this.far.stats.hp -= this.near.stats.attack;
+    } else {
+      this.near.stats.hp -= this.far.stats.attack;
+    }
+    this.isMyTurn = !this.isMyTurn;
+    console.log("Far HP: ", this.far.stats.hp);
+    console.log("Near HP: ", this.near.stats.hp);
+    this.render();
+  };
   async getPokeInfo(id, isFar) {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!res.ok) throw new Error("Darn it");
@@ -38,70 +57,64 @@ export default class Battle extends HTMLElement {
       app.store.team[this.teamIndex],
       false
     );
-    this.render(farPokeInfo, nearPokeInfo);
+    this.far = farPokeInfo;
+    this.near = nearPokeInfo;
+    this.render();
   }
-  render(farPokeInfo, nearPokeInfo) {
-    const {
-      name: farName,
-      types: farTypes,
-      stats: farStats,
-      img: farImg,
-    } = farPokeInfo;
-    const {
-      name: nearName,
-      types: nearTypes,
-      stats: nearStats,
-      img: nearImg,
-    } = nearPokeInfo;
+  render() {
     this.innerHTML = `
         <h2>Battle</h2>
         <div id="battle-grid">
             <div class="battle-row">
                 <div id="far-stats">
                     <div class="type-container">
-                        ${farTypes
+                        ${this.far.types
                           .map(
                             (type) =>
                               `<img class="type-icon" src="../assets/types/${type}.svg">`
                           )
                           .join("")}
                     </div>
-                    <p>${farName}</p>
-                    <p>HP: ${farStats.hp}</p>
-                    <p>ATK: ${farStats.attack}</p>
-                    <p>DEF: ${farStats.defense}</p>
-                    <p>SPE: ${farStats.speed}</p>
-                    <p>S ATK: ${farStats["special-attack"]}</p>
-                    <p>S DEF: ${farStats["special-defense"]}</p>
+                    <p>${this.far.name}</p>
+                    <p>HP: ${this.far.stats.hp}</p>
+                    <p>ATK: ${this.far.stats.attack}</p>
+                    <p>DEF: ${this.far.stats.defense}</p>
+                    <p>SPE: ${this.far.stats.speed}</p>
+                    <p>S ATK: ${this.far.stats["special-attack"]}</p>
+                    <p>S DEF: ${this.far.stats["special-defense"]}</p>
                 </div>
                 <div class="img-div">
-                    <img id="farImg" src="${farImg}">
+                    <img id="farImg" src="${this.far.img}">
                 </div>
+            </div>
+            <div id="control-btns">
+                <button id="atk-btn">Attack</button>
             </div>
             <div class="battle-row">
                 <div class="img-div">
-                    <img id="nearImg" src="${nearImg}">
+                    <img id="nearImg" src="${this.near.img}">
                 </div>
                 <div id="near-stats">
                     <div class="type-container">
-                        ${farTypes
+                        ${this.near.types
                           .map(
                             (type) =>
                               `<img class="type-icon" src="../assets/types/${type}.svg">`
                           )
                           .join("")}
                     </div>
-                    <p>${nearName}</p>
-                    <p>HP: ${nearStats.hp}</p>
-                    <p>ATK: ${nearStats.attack}</p>
-                    <p>DEF: ${nearStats.defense}</p>
-                    <p>SPE: ${nearStats.speed}</p>
-                    <p>S ATK: ${nearStats["special-attack"]}</p>
-                    <p>S DEF: ${nearStats["special-defense"]}</p>
+                    <p>${this.near.name}</p>
+                    <p>HP: ${this.near.stats.hp}</p>
+                    <p>ATK: ${this.near.stats.attack}</p>
+                    <p>DEF: ${this.near.stats.defense}</p>
+                    <p>SPE: ${this.near.stats.speed}</p>
+                    <p>S ATK: ${this.near.stats["special-attack"]}</p>
+                    <p>S DEF: ${this.near.stats["special-defense"]}</p>
                 </div>
             </div>
         </div>
     `;
+    this._bindListeners();
   }
 }
 

@@ -30,7 +30,6 @@ h2, h3 {
     display: flex;
     justify-content: space-around;
     border: 1px solid green;
-    margin-bottom: 50px;
 }
 
 .img-div {
@@ -43,6 +42,13 @@ h2, h3 {
 
 #nearImg {
     width: 200px;
+}
+
+#control-btns {
+    border: 1px solid yellow;
+    display: flex;
+    justify-content: center;
+    margin: 25px auto;
 }
 
 /* POKEDEX */
