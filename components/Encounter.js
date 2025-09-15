@@ -18,8 +18,7 @@ export default class Encounter extends HTMLElement {
     const randomId = Math.ceil(Math.random() * 200);
     this.found = randomId;
 
-    if (!app.store.session) app.store.session = {};
-    app.store.session.currentEncounter = { pid: randomId };
+    app.store.currentEncounter = { pid: randomId };
 
     this.render();
     this._bindListeners();

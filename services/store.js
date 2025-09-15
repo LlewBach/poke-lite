@@ -1,6 +1,7 @@
 const store = {
-  caught: 0,
-  team: [],
+  // caught: 0,
+  team: [25],
+  currentEncounter: {},
 };
 
 const handler = {

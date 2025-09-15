@@ -1,44 +1,71 @@
 export default class Battle extends HTMLElement {
   constructor() {
     super();
-    this.pid;
+    this.farPid;
+    this.teamIndex = 0;
   }
   connectedCallback() {
-    this.pid = app.store?.session?.currentEncounter.pid;
-    console.log("pid: ", this.pid);
-    if (!this.pid) {
+    this.farPid = app.store.currentEncounter?.pid;
+    console.log("farPid: ", this.farPid);
+    if (!this.farPid) {
       location.hash = "#/encounter";
+      return;
     }
     this.load();
   }
-  async load() {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${this.pid}`);
+  async getPokeInfo(id, isFar) {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!res.ok) throw new Error("Darn it");
     const data = await res.json();
     console.log("Data: ", data);
-    const farName = data.name;
-    const farTypes = data.types.map((obj) => obj.type.name);
-    const farStats = Object.fromEntries(
+    const name = data.name;
+    const types = data.types.map((obj) => obj.type.name);
+    const stats = Object.fromEntries(
       data.stats.map((s) => [s.stat.name, s.base_stat])
     );
-    const farImg = data.sprites.other.showdown.front_default;
-    const nearImg = data.sprites.other.showdown.back_default;
-    this.render(farName, farTypes, farStats, farImg, nearImg);
+    const showdown = data.sprites.other.showdown;
+    const img = isFar ? showdown.front_default : showdown.back_default;
+    return {
+      name,
+      types,
+      stats,
+      img,
+    };
   }
-  render(farName, farTypes, farStats, farImg, nearImg) {
+  async load() {
+    const farPokeInfo = await this.getPokeInfo(this.farPid, true);
+    const nearPokeInfo = await this.getPokeInfo(
+      app.store.team[this.teamIndex],
+      false
+    );
+    this.render(farPokeInfo, nearPokeInfo);
+  }
+  render(farPokeInfo, nearPokeInfo) {
+    const {
+      name: farName,
+      types: farTypes,
+      stats: farStats,
+      img: farImg,
+    } = farPokeInfo;
+    const {
+      name: nearName,
+      types: nearTypes,
+      stats: nearStats,
+      img: nearImg,
+    } = nearPokeInfo;
     this.innerHTML = `
         <h2>Battle</h2>
         <div id="battle-grid">
             <div class="battle-row">
                 <div id="far-stats">
-                <div class="type-container">
-                    ${farTypes
-                      .map(
-                        (type) =>
-                          `<img class="type-icon" src="../assets/types/${type}.svg">`
-                      )
-                      .join("")}
-                </div>
+                    <div class="type-container">
+                        ${farTypes
+                          .map(
+                            (type) =>
+                              `<img class="type-icon" src="../assets/types/${type}.svg">`
+                          )
+                          .join("")}
+                    </div>
                     <p>${farName}</p>
                     <p>HP: ${farStats.hp}</p>
                     <p>ATK: ${farStats.attack}</p>
@@ -47,16 +74,30 @@ export default class Battle extends HTMLElement {
                     <p>S ATK: ${farStats["special-attack"]}</p>
                     <p>S DEF: ${farStats["special-defense"]}</p>
                 </div>
-                <div id="far-poke">
+                <div class="img-div">
                     <img id="farImg" src="${farImg}">
                 </div>
             </div>
             <div class="battle-row">
-                <div id="near-poke">
+                <div class="img-div">
                     <img id="nearImg" src="${nearImg}">
                 </div>
                 <div id="near-stats">
-                    <p>Near stats</p>
+                    <div class="type-container">
+                        ${farTypes
+                          .map(
+                            (type) =>
+                              `<img class="type-icon" src="../assets/types/${type}.svg">`
+                          )
+                          .join("")}
+                    </div>
+                    <p>${nearName}</p>
+                    <p>HP: ${nearStats.hp}</p>
+                    <p>ATK: ${nearStats.attack}</p>
+                    <p>DEF: ${nearStats.defense}</p>
+                    <p>SPE: ${nearStats.speed}</p>
+                    <p>S ATK: ${nearStats["special-attack"]}</p>
+                    <p>S DEF: ${nearStats["special-defense"]}</p>
                 </div>
             </div>
         </div>

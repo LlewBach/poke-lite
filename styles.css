@@ -33,6 +33,10 @@ h2, h3 {
     margin-bottom: 50px;
 }
 
+.img-div {
+    border: 1px solid purple;
+}
+
 #farImg {
     width: 100px;
 }
