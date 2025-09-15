@@ -3,9 +3,11 @@ export default class Battle extends HTMLElement {
     super();
     this.farPid;
     this.teamIndex = 0;
-    this.isMyTurn = false;
+    this.isMyTurn = true;
     this.far;
     this.near;
+    this.hasWon;
+    this.battleOver = false;
   }
   connectedCallback() {
     this.farPid = app.store.currentEncounter?.pid;
@@ -20,18 +22,6 @@ export default class Battle extends HTMLElement {
     const atkBtn = this.querySelector("#atk-btn");
     atkBtn.addEventListener("click", this._attack);
   }
-  _attack = () => {
-    console.log("Attacking!");
-    if (this.isMyTurn) {
-      this.far.stats.hp -= this.near.stats.attack;
-    } else {
-      this.near.stats.hp -= this.far.stats.attack;
-    }
-    this.isMyTurn = !this.isMyTurn;
-    console.log("Far HP: ", this.far.stats.hp);
-    console.log("Near HP: ", this.near.stats.hp);
-    this.render();
-  };
   async getPokeInfo(id, isFar) {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
     if (!res.ok) throw new Error("Darn it");
@@ -61,8 +51,33 @@ export default class Battle extends HTMLElement {
     this.near = nearPokeInfo;
     this.render();
   }
+  _attack = () => {
+    console.log("Attacking!");
+    // I attack
+    if (this.isMyTurn) {
+      this.far.stats.hp -= Math.ceil(this.near.stats.attack / 3);
+      if (this.far.stats.hp <= 0) {
+        this.far.stats.hp = 0;
+        this.battleOver = true;
+        this.hasWon = true;
+      }
+      // Enemy attacks
+    } else {
+      this.near.stats.hp -= Math.ceil(this.far.stats.attack / 3);
+      if (this.near.stats.hp <= 0) {
+        this.near.stats.hp = 0;
+        this.battleOver = true;
+        this.hasWon = false;
+      }
+    }
+    this.isMyTurn = !this.isMyTurn;
+    console.log("Far HP: ", this.far.stats.hp);
+    console.log("Near HP: ", this.near.stats.hp);
+    this.render();
+  };
   render() {
-    this.innerHTML = `
+    this.innerHTML = !this.battleOver
+      ? `
         <h2>Battle</h2>
         <div id="battle-grid">
             <div class="battle-row">
@@ -113,7 +128,10 @@ export default class Battle extends HTMLElement {
                 </div>
             </div>
         </div>
-    `;
+        `
+      : this.hasWon
+      ? `<h2>You Won!</h2>`
+      : `<h2>You lose!`;
     this._bindListeners();
   }
 }
