@@ -20,6 +20,17 @@ h2, h3 {
     text-transform: capitalize;
 }
 
+#search-form {
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+#search-input {
+    padding: 5px;
+    min-width: 200px;
+}
+
 .pokedex-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
