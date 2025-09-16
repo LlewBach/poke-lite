@@ -130,8 +130,16 @@ export default class Battle extends HTMLElement {
         </div>
         `
       : this.hasWon
-      ? `<h2>You Won!</h2>`
-      : `<h2>You lose!`;
+      ? `
+        <h2>You Won!</h2>
+        <a href="#/">Continue</a>
+        <p>Cock</p>
+      `
+      : `
+        <h2>You lose!</h2>
+        <a href="#/">Continue</a>
+        <p>Cock</p>
+      `;
     this._bindListeners();
   }
 }

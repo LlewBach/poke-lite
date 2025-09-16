@@ -19,6 +19,20 @@ header {
 
 h2, h3 {
     text-transform: capitalize;
+    text-align: center;
+}
+
+/* DASHBOARD */
+#team-grid {
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid green;
+}
+
+.team-space {
+    min-width: 100px;
+    min-height: 100px;
+    border: 1px solid red;
 }
 
 /* BATTLE */
