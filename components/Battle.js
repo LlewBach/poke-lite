@@ -22,7 +22,9 @@ export default class Battle extends HTMLElement {
   }
   _bindListeners() {
     const atkBtn = this.querySelector("#atk-btn");
+    const throwBtn = this.querySelector("#throw");
     if (atkBtn) atkBtn.addEventListener("click", this._attack);
+    if (throwBtn) throwBtn.addEventListener("click", this._throwBall);
   }
   async getPokeInfo(id, isFar) {
     const [pokemon, species] = await Promise.all([
@@ -37,12 +39,15 @@ export default class Battle extends HTMLElement {
     );
     const showdown = pokemon.sprites.other.showdown;
     const img = isFar ? showdown.front_default : showdown.back_default;
+    const maxHP = pokemon.stats.find((s) => s.stat.name == "hp").base_stat;
     return {
       name: pokemon.name,
       types,
       stats,
       img,
       captureRate: species.capture_rate,
+      maxHP,
+      curHP: maxHP,
     };
   }
   async load() {
@@ -59,27 +64,49 @@ export default class Battle extends HTMLElement {
     console.log("Attacking!");
     // I attack
     if (this.isMyTurn) {
-      this.far.stats.hp -= Math.ceil(this.near.stats.attack / 3);
-      if (this.far.stats.hp <= 0) {
-        this.far.stats.hp = 0;
+      this.far.curHP -= Math.ceil(this.near.stats.attack / 3);
+      if (this.far.curHP <= 0) {
+        this.far.curHP = 0;
         this.battleOver = true;
         this.hasWon = true;
       }
       // Enemy attacks
     } else {
-      this.near.stats.hp -= Math.ceil(this.far.stats.attack / 3);
-      if (this.near.stats.hp <= 0) {
-        this.near.stats.hp = 0;
+      this.near.curHP -= Math.ceil(this.far.stats.attack / 3);
+      if (this.near.curHP <= 0) {
+        this.near.curHP = 0;
         this.battleOver = true;
         this.hasWon = false;
       }
     }
     this.isMyTurn = !this.isMyTurn;
-    console.log("Far HP: ", this.far.stats.hp);
-    console.log("Near HP: ", this.near.stats.hp);
+    console.log("Far HP: ", this.far.curHP);
+    console.log("Near HP: ", this.near.curHP);
+    this.render();
+    if (!this.isMyTurn) this._attack();
+  };
+  _throwBall = () => {
+    const chance = this._catchChance(
+      this.far.captureRate,
+      this.far.maxHP,
+      this.far.curHP
+    );
+    const success = Math.random() < chance;
+    if (success) {
+      app.store.caught = [...app.store.caught, this.farPid];
+      this.battleOver = true;
+      this.hasWon = true;
+      console.log("Caught!");
+    } else {
+      this.isMyTurn = false;
+      console.log("Broke free!");
+    }
     this.render();
   };
-  _tryCatch() {}
+  _catchChance(captureRate, maxHP, curHP) {
+    const a = ((3 * maxHP - 2 * curHP) * captureRate) / (3 * maxHP);
+    return Math.max(0, Math.min(0.95, a / 255));
+  }
   render() {
     this.innerHTML = !this.battleOver
       ? `
@@ -96,7 +123,7 @@ export default class Battle extends HTMLElement {
                           .join("")}
                     </div>
                     <p>${this.far.name}</p>
-                    <p>HP: ${this.far.stats.hp}</p>
+                    <p>HP: ${this.far.curHP}</p>
                     <p>ATK: ${this.far.stats.attack}</p>
                     <p>DEF: ${this.far.stats.defense}</p>
                     <p>SPE: ${this.far.stats.speed}</p>
@@ -110,6 +137,7 @@ export default class Battle extends HTMLElement {
             </div>
             <div id="control-btns">
                 <button id="atk-btn">Attack</button>
+                <button id="throw">Throw Poke Ball</button>
             </div>
             <div class="battle-row">
                 <div class="img-div">
@@ -125,7 +153,7 @@ export default class Battle extends HTMLElement {
                           .join("")}
                     </div>
                     <p>${this.near.name}</p>
-                    <p>HP: ${this.near.stats.hp}</p>
+                    <p>HP: ${this.near.curHP}</p>
                     <p>ATK: ${this.near.stats.attack}</p>
                     <p>DEF: ${this.near.stats.defense}</p>
                     <p>SPE: ${this.near.stats.speed}</p>
