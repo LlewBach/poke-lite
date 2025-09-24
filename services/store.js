@@ -1,6 +1,6 @@
 const store = {
-  // caught: 0,
   team: [25],
+  caught: [],
   currentEncounter: {},
 };
 

@@ -1,3 +1,5 @@
+import { getPokemon, getSpecies } from "../services/pokeApi.js";
+
 export default class Battle extends HTMLElement {
   constructor() {
     super();
@@ -20,25 +22,27 @@ export default class Battle extends HTMLElement {
   }
   _bindListeners() {
     const atkBtn = this.querySelector("#atk-btn");
-    atkBtn.addEventListener("click", this._attack);
+    if (atkBtn) atkBtn.addEventListener("click", this._attack);
   }
   async getPokeInfo(id, isFar) {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    if (!res.ok) throw new Error("Darn it");
-    const data = await res.json();
-    console.log("Data: ", data);
-    const name = data.name;
-    const types = data.types.map((obj) => obj.type.name);
+    const [pokemon, species] = await Promise.all([
+      getPokemon(id),
+      getSpecies(id),
+    ]);
+    console.log("Poke: ", pokemon);
+    console.log("Species: ", species);
+    const types = pokemon.types.map((obj) => obj.type.name);
     const stats = Object.fromEntries(
-      data.stats.map((s) => [s.stat.name, s.base_stat])
+      pokemon.stats.map((s) => [s.stat.name, s.base_stat])
     );
-    const showdown = data.sprites.other.showdown;
+    const showdown = pokemon.sprites.other.showdown;
     const img = isFar ? showdown.front_default : showdown.back_default;
     return {
-      name,
+      name: pokemon.name,
       types,
       stats,
       img,
+      captureRate: species.capture_rate,
     };
   }
   async load() {
@@ -75,6 +79,7 @@ export default class Battle extends HTMLElement {
     console.log("Near HP: ", this.near.stats.hp);
     this.render();
   };
+  _tryCatch() {}
   render() {
     this.innerHTML = !this.battleOver
       ? `
@@ -97,6 +102,7 @@ export default class Battle extends HTMLElement {
                     <p>SPE: ${this.far.stats.speed}</p>
                     <p>S ATK: ${this.far.stats["special-attack"]}</p>
                     <p>S DEF: ${this.far.stats["special-defense"]}</p>
+                    <p>Cap Rate: ${this.far.captureRate}</p>
                 </div>
                 <div class="img-div">
                     <img id="farImg" src="${this.far.img}">
