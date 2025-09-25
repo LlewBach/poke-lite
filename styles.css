@@ -27,7 +27,7 @@ p.center {
 }
 
 /* DASHBOARD */
-#card-grid,
+#team-grid,
 #caught-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -36,12 +36,31 @@ p.center {
     border: 1px solid green;
 }
 
+#team-grid.drop-over,
+#caught-grid.drop-over {
+    outline: 3px dashed #7dd3fc;
+    outline-offset: 6px;
+    background: rgba(125, 211, 252, 0.08);
+    border-radius: 8px;
+    transition: background 120ms ease, outline-offset 120ms ease;
+}
+
 .card-space {
     display: flex;
     justify-content: center;
     min-width: 100px;
     min-height: 100px;
     border: 1px solid red;
+}
+
+.card-space[draggable="true"] { cursor: grab; }
+.card-space[draggable="true"]:active { cursor: grabbing; }
+
+.card-space.empty { 
+    display:grid;
+    place-items:center;
+    border:1px dashed #bbb;
+    color:#888; height:140px;
 }
 
 /* BATTLE */
