@@ -5,7 +5,9 @@ export default class PokeCard extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         div.card {
-          max-width: 400px;
+          min-width: 140px;
+          max-width: 250px;
+          height: 300px;
           padding:12px;
           background:#eee; 
           border:1px solid #ddd; 

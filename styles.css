@@ -22,15 +22,23 @@ h2, h3 {
     text-align: center;
 }
 
+p.center {
+    text-align: center;
+}
+
 /* DASHBOARD */
 #card-grid,
 #caught-grid {
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    /* justify-content: space-around; */
     border: 1px solid green;
 }
 
 .card-space {
+    display: flex;
+    justify-content: center;
     min-width: 100px;
     min-height: 100px;
     border: 1px solid red;

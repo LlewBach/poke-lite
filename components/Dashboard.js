@@ -13,10 +13,8 @@ export default class Dashboard extends HTMLElement {
   async load() {
     try {
       // Team
-      console.log("Loading");
       const team = app.store.team;
       const caught = app.store.caught;
-
       const teamDetails = await Promise.all(
         team.map(async (id) => {
           const pokemon = await getPokemon(id);
@@ -63,10 +61,11 @@ export default class Dashboard extends HTMLElement {
       `;
     }).join("");
 
-    const caughtSlots = Array.from({ length: 6 }, (_, i) => {
-      const p = this.caughtDetails[i];
-      if (!p) return `<div class="card-space empty">?</div>`;
-      return `
+    const caughtSlots = this.caughtDetails
+      .map((_, i) => {
+        const p = this.caughtDetails[i];
+        if (!p) return `<div class="card-space empty">?</div>`;
+        return `
         <div class="card-space">
           <poke-card
             pid="${p.pid}"
@@ -83,7 +82,8 @@ export default class Dashboard extends HTMLElement {
           </poke-card>
         </div>
       `;
-    }).join("");
+      })
+      .join("");
 
     this.innerHTML = `
       <section class="dashboard">
@@ -93,9 +93,17 @@ export default class Dashboard extends HTMLElement {
           ${teamSlots}
         </div>
         <h3>Caught</h3>
-        <div id="caught-grid">
+        ${
+          caughtSlots
+            ? `
+          <div id="caught-grid">
           ${caughtSlots}
         </div>
+        `
+            : `
+          <p class="center">No pokemon caught</p>
+        `
+        }
       </section>
     `;
   };
