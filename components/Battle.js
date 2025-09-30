@@ -1,9 +1,11 @@
 import { getPokemon, getSpecies } from "../services/pokeApi.js";
+import { getImage } from "../services/dataHandlers.js";
 
 export default class Battle extends HTMLElement {
   constructor() {
     super();
     this.farPid;
+    this.teamImgs;
     this.teamIndex = 0;
     this.isMyTurn = true;
     this.far;
@@ -58,6 +60,12 @@ export default class Battle extends HTMLElement {
     );
     this.far = farPokeInfo;
     this.near = nearPokeInfo;
+    this.teamImgs = await Promise.all(
+      app.store.team.map(async (id) => {
+        const pokemon = await getPokemon(id);
+        return getImage(pokemon);
+      })
+    );
     this.render();
   }
   _attack = () => {
@@ -108,6 +116,16 @@ export default class Battle extends HTMLElement {
     return Math.max(0, Math.min(0.95, a / 255));
   }
   render() {
+    const teamSlots = Array.from({ length: 6 }, (_, i) => {
+      const img = this.teamImgs[i];
+      if (!img) return `<div>?</div>`;
+      return `
+        <div class="team-icon">
+            <img class="team-img" src="${img}" />
+        </div>
+        `;
+    }).join("");
+
     this.innerHTML = !this.battleOver
       ? `
         <h2>Battle</h2>
@@ -161,6 +179,10 @@ export default class Battle extends HTMLElement {
                     <p>S DEF: ${this.near.stats["special-defense"]}</p>
                 </div>
             </div>
+        </div>
+        <h2>Team Bench</h2>
+        <div id="bench-grid">
+            ${teamSlots}
         </div>
         `
       : `

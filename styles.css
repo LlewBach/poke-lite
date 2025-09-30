@@ -93,6 +93,21 @@ p.center {
     margin: 25px auto;
 }
 
+div#bench-grid {
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid green;
+    padding: 5px;
+}
+
+div.team-icon {
+    border: 1px solid red;
+}
+
+.team-img {
+    width: 100px;
+}
+
 /* POKEDEX */
 #search-form {
     display: flex;
