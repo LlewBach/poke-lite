@@ -1,11 +1,14 @@
+import { getCardInfo } from "../services/dataHandlers.js";
+
 export default class Pokedex extends HTMLElement {
   constructor() {
     super();
+    this.MAX = 1025;
     this.pokeIndex = null;
     this.limit = 24;
     this.page = this._readPageFromHash() || 1;
     this.items = [];
-    this.count = 0;
+    this.count = this.MAX;
   }
 
   connectedCallback() {
@@ -89,7 +92,7 @@ export default class Pokedex extends HTMLElement {
     // Start fetch
     console.log("Fetching pokeIndex");
     const res = await fetch(
-      "https://pokeapi.co/api/v2/pokemon?limit=2000&offset=0"
+      "https://pokeapi.co/api/v2/pokemon?limit=1025&offset=0"
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
@@ -111,20 +114,7 @@ export default class Pokedex extends HTMLElement {
           const urlRes = await fetch(searchUrl);
           if (!urlRes.ok) throw new Error(`HTTP ${urlRes.status}`);
           const data = await urlRes.json();
-          this.items = [
-            {
-              pid: data.id,
-              name: data.name,
-              img:
-                data.sprites?.other?.["official-artwork"]?.front_default ||
-                data.sprites?.front_default ||
-                "",
-              types: data.types.map((t) => t.type.name),
-              stats: Object.fromEntries(
-                data.stats.map((s) => [s.stat.name, s.base_stat])
-              ),
-            },
-          ];
+          this.items = [getCardInfo(data)];
         }
       } catch (err) {
         this.innerHTML = `<p style="color:red">Error finding Pokémon: ${String(
@@ -134,13 +124,24 @@ export default class Pokedex extends HTMLElement {
     } else {
       // Full load
       const offset = (this.page - 1) * this.limit;
+      const effectiveLimit = Math.max(
+        0,
+        Math.min(this.limit, this.MAX - offset)
+      );
+
+      // If someone navigates past the cap, snap back to last page
+      if (effectiveLimit <= 0) {
+        const totalPages = Math.max(1, Math.ceil(this.MAX / this.limit));
+        this.page = totalPages;
+        this._writePageToHash();
+        return this.load();
+      }
       try {
         const res = await fetch(
-          `https://pokeapi.co/api/v2/pokemon?limit=${this.limit}&offset=${offset}`
+          `https://pokeapi.co/api/v2/pokemon?limit=${effectiveLimit}&offset=${offset}`
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const list = await res.json();
-        this.count = list.count;
         console.log("List: ", list);
 
         const details = await Promise.all(
@@ -149,18 +150,7 @@ export default class Pokedex extends HTMLElement {
 
         console.log("Details: ", details);
 
-        this.items = details.map((d) => ({
-          pid: d.id,
-          name: d.name,
-          img:
-            d.sprites?.other?.["official-artwork"]?.front_default ||
-            d.sprites?.front_default ||
-            "",
-          types: d.types.map((t) => t.type.name),
-          stats: Object.fromEntries(
-            d.stats.map((s) => [s.stat.name, s.base_stat])
-          ),
-        }));
+        this.items = details.map(getCardInfo);
       } catch (err) {
         this.innerHTML = `<p style="color:red">Error loading Pokédex: ${String(
           err
@@ -173,7 +163,7 @@ export default class Pokedex extends HTMLElement {
   }
   render() {
     const items = this.items ?? [];
-    const totalPages = Math.ceil(this.count / this.limit) || 1;
+    const totalPages = Math.max(1, Math.ceil(this.MAX / this.limit));
     this.innerHTML = `
         <section>
             <h2>Pokedex</h2>

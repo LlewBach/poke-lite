@@ -1,3 +1,6 @@
+import { getPokemon, getSpecies } from "../services/pokeApi.js";
+import { getImage } from "../services/dataHandlers.js";
+
 export default class PokeDetails extends HTMLElement {
   constructor() {
     super();
@@ -9,14 +12,10 @@ export default class PokeDetails extends HTMLElement {
   }
   async load() {
     try {
-      const poke = await fetch(
-        `https://pokeapi.co/api/v2/pokemon/${this.pid}`
-      ).then((r) => r.json());
+      const poke = await getPokemon(this.pid);
       console.log("Poke: ", poke);
 
-      const species = await fetch(
-        `https://pokeapi.co/api/v2/pokemon-species/${this.pid}`
-      ).then((r) => r.json());
+      const species = await getSpecies(this.pid);
       console.log("Species: ", species);
 
       let chain = [];
@@ -30,9 +29,7 @@ export default class PokeDetails extends HTMLElement {
         // Add image for each pokemon in chain
         chain = await Promise.all(
           chain.map(async (p) => {
-            const pokeDeets = await fetch(
-              `https://pokeapi.co/api/v2/pokemon/${p.pid}`
-            ).then((r) => r.json());
+            const pokeDeets = await getPokemon(p.pid);
             console.log("Pokedeets: ", pokeDeets);
             const evoImg =
               pokeDeets.sprites.other["official-artwork"].front_default ||
@@ -42,10 +39,7 @@ export default class PokeDetails extends HTMLElement {
         ); // [{pid, name, stage, img}]
       }
 
-      const img =
-        poke.sprites?.other?.["official-artwork"]?.front_default ||
-        poke.sprites?.front_default ||
-        "";
+      const img = getImage(poke);
       const types = poke.types.map((t) => t.type.name);
       const stats = Object.fromEntries(
         poke.stats.map((s) => [s.stat.name, s.base_stat])
