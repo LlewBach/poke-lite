@@ -68,7 +68,7 @@ export default class Battle extends HTMLElement {
     );
     this.render();
   }
-  _attack = () => {
+  _attack = async () => {
     console.log("Attacking!");
     // I attack
     if (this.isMyTurn) {
@@ -83,8 +83,14 @@ export default class Battle extends HTMLElement {
       this.near.curHP -= Math.ceil(this.far.stats.attack / 3);
       if (this.near.curHP <= 0) {
         this.near.curHP = 0;
-        this.battleOver = true;
-        this.hasWon = false;
+        if (this.teamIndex >= app.store.team.length) {
+          this.battleOver = true;
+          this.hasWon = false;
+        } else {
+          alert("Pokemon fainted!");
+          await this._sendNextTeammate();
+          this.render();
+        }
       }
     }
     this.isMyTurn = !this.isMyTurn;
@@ -93,6 +99,12 @@ export default class Battle extends HTMLElement {
     this.render();
     if (!this.isMyTurn) this._attack();
   };
+  async _sendNextTeammate() {
+    this.teamIndex++;
+    if (this.teamIndex >= app.store.team.length) return;
+
+    this.near = await this.getPokeInfo(app.store.team[this.teamIndex], false);
+  }
   _throwBall = () => {
     const chance = this._catchChance(
       this.far.captureRate,
