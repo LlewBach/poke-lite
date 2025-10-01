@@ -182,7 +182,7 @@ export default class Dashboard extends HTMLElement {
           <div id="caught-grid">
           ${
             caughtSlots ||
-            `<p class="center">No Pokemon yet - drop here to add.</p>`
+            `<p class="center">Drop here to remove from team.</p>`
           }
         </div>
       </section>
